@@ -30,6 +30,11 @@ where
     })
 }
 
+/// Listens to keyboard key presses and calls the given function
+/// to map them into actual messages.
+///
+/// If the function returns `None`, the key press will be simply
+/// ignored.
 pub fn on_key_press_ext<Message>(
     f: fn(Key, Key, Modifiers) -> Option<Message>,
 ) -> Subscription<Message>
