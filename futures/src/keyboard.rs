@@ -30,6 +30,31 @@ where
     })
 }
 
+pub fn on_key_press_ext<Message>(
+    f: fn(Key, Key, Modifiers) -> Option<Message>,
+) -> Subscription<Message>
+where
+    Message: MaybeSend + 'static,
+{
+    #[derive(Hash)]
+    struct OnKeyPress;
+
+    subscription::filter_map((OnKeyPress, f), move |event| match event {
+        subscription::Event::Interaction {
+            event:
+                core::Event::Keyboard(Event::KeyPressed {
+                    key,
+                    modified_key,
+                    modifiers,
+                    ..
+                }),
+            status: event::Status::Ignored,
+            ..
+        } => f(key, modified_key, modifiers),
+        _ => None,
+    })
+}
+
 /// Listens to keyboard key releases and calls the given function
 /// to map them into actual messages.
 ///
